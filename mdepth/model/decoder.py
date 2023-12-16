@@ -57,7 +57,7 @@ class DepthDecoder(nn.Module):
             disps.append(
                 nn.Sequential(
                     nn.ReflectionPad2d(1),
-                    nn.Conv2d(self.ochannels[i], 1, kernel_size=3),
+                    nn.Conv2d(self.ochannels[i], 2, kernel_size=3),
                     nn.Sigmoid(),
                 )
             )

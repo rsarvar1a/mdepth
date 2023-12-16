@@ -1,4 +1,4 @@
-from torch import nn, Tensor
+from torch import nn, load, save, Tensor
 from torch.nn import functional as F
 
 from .encoder import ImageEncoder
@@ -27,6 +27,18 @@ class MonocularDepth(nn.Module):
         encoded = list(map(lambda e: self._interpolate(e, size=size), self.encoder(x)))
         decoded = self.decoder(encoded)
         return decoded
+
+    def load(self, path):
+        """
+        Loads the model from disk.
+        """
+        self.load_state_dict(load(path))
+    
+    def save(self, path):
+        """
+        Saves a model to a PyTorch model file.
+        """
+        save(self.state_dict(), path)
 
     def _interpolate(self, x: Tensor, *, size) -> Tensor:
         """
