@@ -17,7 +17,7 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
         
         total_loss = 0.
         
-        for batch, data in tqdm(enumerate(dataloader), unit="batch", total=len(dataloader)):
+        for batch, data in tqdm.tqdm(enumerate(dataloader), unit="batch", total=len(dataloader)):
             
             optimizer.zero_grad()
             
