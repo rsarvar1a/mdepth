@@ -7,27 +7,33 @@ import torch
 from .transforms import DisparityToDepth
 
 
-def test (model, *, dataloader, device, num_samples):
+def test (model, *, dataloader, device, loss, num_samples):
     
     model.eval()
     
     samples = []
+    loss = 0.
     
     with torch.no_grad():
         
         for batch, data in enumerate(dataloader):
             
-            inputs = data.to(device) # 1, 3, h, w
-            disparities = model(inputs) # [1, 2, h, w]
+            l_image, r_image = data[0].to(device), data[1].to(device) # 1, 3, h, w
+            disparities = model(l_image) # [1, 2, h, w]
             disparity_map = disparities[0][:, 0, :, :] # 1, 1, h, w
             depth_map = DisparityToDepth(1, 100)(disparity_map) # 1, 1, h, w
-                        
+            loss_term = loss(disparities, [l_image, r_image])
+            
             samples.append([
-                inputs.squeeze().cpu().numpy(), # 3, h, w
+                l_image.squeeze().cpu().numpy(), # 3, h, w
                 depth_map.squeeze(0).cpu().numpy() # 1, h, w
             ])
+            
+            loss += np.sum(loss_term.item()) / l_image.shape[0]
     
-    return random.sample(samples, num_samples)
+        loss /= (batch + 1)
+    
+    return loss, random.sample(samples, num_samples)
 
 
 def show_results (samples):
