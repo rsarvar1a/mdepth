@@ -25,7 +25,7 @@ class MonocularDepth(nn.Module):
         """
         size = x.shape[-2:]
         encoded = [self._interpolate(e, size=size) for e in self.encoder(x)]
-        decoded = self.decoder(encoded)
+        decoded = [self._interpolate(d, size=size) for d in self.decoder(encoded)]
         return decoded
 
     def load(self, path):
