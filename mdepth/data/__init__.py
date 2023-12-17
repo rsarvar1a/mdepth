@@ -15,8 +15,8 @@ class KittiDataset(Dataset):
 
     def __init__(self, path, mode="train", transforms=None):
         
-        l_path = os.path.join(path, "data_object_image_2", f"{mode}ing")
-        r_path = os.path.join(path, "data_object_image_3", f"{mode}ing")
+        l_path = os.path.join(path, f"{mode}ing", "image_2")
+        r_path = os.path.join(path, f"{mode}ing", "image_3")
         self.l_images = sorted([os.path.join(l_path, f) for f in os.listdir(l_path)])
         self.r_images = sorted([os.path.join(r_path, f) for f in os.listdir(r_path)])
         self.mode = mode
