@@ -14,7 +14,7 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
         # Some performance metrics.
         time_s = time.perf_counter()
         
-        loss = 0.
+        total_loss = 0.
         
         for batch, data in enumerate(dataloader):
             
@@ -34,12 +34,12 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
             optimizer.step()
             
             # Update the loss by adding the average loss of the batch.
-            loss += np.sum(loss_term.item()) / l_images.shape[0]
+            total_loss += np.sum(loss_term.item()) / l_images.shape[0]
         
         # The loss is the average loss per batch over all batches, rather than the sum 
         # over all batches.
-        loss /= (batch + 1)
-        losses.append(loss)
+        total_loss /= (batch + 1)
+        losses.append(total_loss)
         
         time_e = time.perf_counter()
         

@@ -12,7 +12,7 @@ def test (model, *, dataloader, device, loss, num_samples):
     model.eval()
     
     samples = []
-    loss = 0.
+    total_loss = 0.
     
     with torch.no_grad():
         
@@ -29,11 +29,11 @@ def test (model, *, dataloader, device, loss, num_samples):
                 depth_map.squeeze(0).cpu().numpy() # 1, h, w
             ])
             
-            loss += np.sum(loss_term.item()) / l_image.shape[0]
+            total_loss += np.sum(loss_term.item()) / l_image.shape[0]
     
-        loss /= (batch + 1)
+        total_loss /= (batch + 1)
     
-    return loss, random.sample(samples, num_samples)
+    return total_loss, random.sample(samples, num_samples)
 
 
 def show_results (samples):
