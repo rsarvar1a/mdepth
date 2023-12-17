@@ -44,6 +44,7 @@ def show_results (samples):
     for sample in samples:
         
         image, depth = sample
+        print(list(image.shape), list(depth.shape))
         
         plt.figure(figsize=(18, 10))
         
