@@ -113,7 +113,7 @@ class MonocularLoss(nn.Module):
             r = 2 ** (i - 1)
             imgs.append(
                 F.interpolate(
-                    img, size=[h // r, w // r], mode="bilinear", align_corners=True
+                    img, size=(int(h // r), int(w // r)), mode="bilinear", align_corners=True
                 )
             )
         return imgs
