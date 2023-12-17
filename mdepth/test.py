@@ -39,12 +39,11 @@ def test (model, *, dataloader, device, loss, num_samples):
 def show_results (samples):
     
     transform_image = lambda im: im.transpose(1, 2, 0)
-    transform_depth = lambda im: im.transpose()
+    transform_depth = lambda im: im
     
     for sample in samples:
         
         image, depth = sample
-        print(list(image.shape), list(depth.shape))
         
         plt.figure(figsize=(18, 10))
         
