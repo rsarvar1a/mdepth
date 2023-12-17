@@ -55,9 +55,9 @@ class MonocularLoss(nn.Module):
         l_disp_loss = torch.mean(torch.abs(l_smooth))
         r_disp_loss = torch.mean(torch.abs(r_smooth))
 
-        im_loss = sum(l_im_loss + r_im_loss)
-        lr_loss = sum(l_lr_loss + r_lr_loss)
-        disp_loss = sum(l_disp_loss + r_disp_loss)
+        im_loss = l_im_loss + r_im_loss
+        lr_loss = l_lr_loss + r_lr_loss
+        disp_loss = l_disp_loss + r_disp_loss
 
         loss = im_loss + self.weight_disp * disp_loss + self.weight_lr * lr_loss
         return loss
