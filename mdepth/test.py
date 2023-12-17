@@ -38,21 +38,22 @@ def test (model, *, dataloader, device, loss, num_samples):
 
 def show_results (samples):
     
-    transform = lambda im: im.transpose(1, 2, 0)
+    transform_image = lambda im: im.transpose(1, 2, 0)
+    transform_depth = lambda im: im.transpose()
     
     for sample in samples:
         
         image, depth = sample
         
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(18, 10))
         
         plt.subplot(121)
-        plt.imshow(transform(image))
+        plt.imshow(transform_image(image))
         plt.title('Input')
         plt.axis('off')
         
         plt.subplot(122)
-        plt.imshow(transform(depth), cmap='magma', vmax=np.percentile(depth, 95))
+        plt.imshow(transform_depth(depth), cmap='magma', vmax=np.percentile(depth, 95))
         plt.title('Depth')
         plt.axis('off')
         
