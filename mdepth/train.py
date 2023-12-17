@@ -60,7 +60,7 @@ def display_loss_graph (losses):
     
     plt.figure(figsize=(12, 8))
     
-    ax = plt.add_subplot(111)
+    ax = plt.subplot(111)
     ax.set_xlabel('epoch')
     ax.set_ylabel('loss')
     ax.set_title('training loss')
