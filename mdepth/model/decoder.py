@@ -36,7 +36,7 @@ class DepthDecoder(nn.Module):
         conv1s = []
         conv2s = []
 
-        for i in range(self.length - 1):
+        for i in range(self.length):
             conv1s.append(
                 Block(
                     self.ichannels[-1]
