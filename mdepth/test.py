@@ -20,7 +20,7 @@ def test (model, *, dataloader, device, loss, num_samples):
             
             l_image, r_image = data[0].to(device), data[1].to(device) # 1, 3, h, w
             disparities = model(l_image) # [1, 2, h, w]
-            disparity_map = disparities[0][:, 0, :, :] # 1, 1, h, w
+            disparity_map = disparities[:, 0, :, :] # 1, 1, h, w
             depth_map = DisparityToDepth(1, 100)(disparity_map) # 1, 1, h, w
             loss_term = loss(disparities, [l_image, r_image])
             
