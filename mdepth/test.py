@@ -38,7 +38,7 @@ def test (model, *, dataloader, device, loss, num_samples):
 
 def show_results (samples):
     
-    transform = lambda im: im.permute(1, 2, 0)
+    transform = lambda im: im.transpose(1, 2, 0)
     
     for sample in samples:
         
