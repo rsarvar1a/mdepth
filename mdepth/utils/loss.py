@@ -11,14 +11,12 @@ class MonocularLoss(nn.Module):
     the left and right images separately.
     """
 
-    def __init__(self, *, n, weight_ssim=0.85, weight_disp=1.0, weight_lr=1.0):
+    def __init__(self, *, weight_ssim=0.85, weight_disp=1.0, weight_lr=1.0):
         """
         Creates a new loss with the given subloss weights for the disparity pyramid
         of the given height.
         """
         super().__init__()
-
-        self.n = n
 
         self.weight_ssim = weight_ssim
         self.weight_disp = weight_disp
@@ -30,49 +28,32 @@ class MonocularLoss(nn.Module):
         """
         l_target, r_target = stereo_pair
 
-        l_stack = self._pyramid(l_target)
-        r_stack = self._pyramid(r_target)
+        l_disps = disps[:, 0, :, :].unsqueeze(1)
+        r_disps = disps[:, 1, :, :].unsqueeze(1)
 
-        l_disps = [d[:, 0, :, :].unsqueeze(1) for d in disps]
-        r_disps = [d[:, 1, :, :].unsqueeze(1) for d in disps]
+        l_est = self._l_image(r_target, l_disps)
+        r_est = self._r_image(l_target, r_disps)
 
-        l_est = [self._l_image(r_stack[i], l_disps[i]) for i in range(self.n)]
-        r_est = [self._r_image(l_stack[i], r_disps[i]) for i in range(self.n)]
+        rl_disp = self._l_image(r_est, l_est) 
+        lr_disp = self._r_image(l_est, r_est)
 
-        rl_disp = [self._l_image(r_est[i], l_est[i]) for i in range(self.n)]
-        lr_disp = [self._r_image(l_est[i], r_est[i]) for i in range(self.n)]
+        l_smooth = self._smoothness(l_est, l_target)
+        r_smooth = self._smoothness(r_est, r_target)
 
-        l_smooth = self._smoothness(l_est, l_stack)
-        r_smooth = self._smoothness(r_est, r_stack)
+        l_l1 = torch.mean(torch.abs(l_est - l_target))
+        r_l1 = torch.mean(torch.abs(r_est - r_target))
 
-        l_l1 = [torch.mean(torch.abs(l_est[i] - l_stack[i])) for i in range(self.n)]
-        r_l1 = [torch.mean(torch.abs(r_est[i] - r_stack[i])) for i in range(self.n)]
+        l_ssim = torch.mean(self._ssim(l_est, l_target))
+        r_ssim = torch.mean(self._ssim(r_est, r_target))
 
-        l_ssim = [torch.mean(self._ssim(l_est[i], l_stack[i])) for i in range(self.n)]
-        r_ssim = [torch.mean(self._ssim(r_est[i], r_stack[i])) for i in range(self.n)]
+        l_im_loss = self.weight_ssim * l_ssim + (1 - self.weight_ssim) * l_l1
+        r_im_loss = self.weight_ssim * r_ssim + (1 - self.weight_ssim) * r_l1
 
-        l_im_loss = [
-            self.weight_ssim * l_ssim[i] + (1 - self.weight_ssim) * l_l1[i]
-            for i in range(self.n)
-        ]
-        r_im_loss = [
-            self.weight_ssim * r_ssim[i] + (1 - self.weight_ssim) * r_l1[i]
-            for i in range(self.n)
-        ]
+        l_lr_loss = torch.mean(torch.abs(rl_disp - l_est))
+        r_lr_loss = torch.mean(torch.abs(lr_disp - r_est))
 
-        l_lr_loss = [
-            torch.mean(torch.abs(rl_disp[i] - l_est[i])) for i in range(self.n)
-        ]
-        r_lr_loss = [
-            torch.mean(torch.abs(lr_disp[i] - r_est[i])) for i in range(self.n)
-        ]
-
-        l_disp_loss = [
-            torch.mean(torch.abs(l_smooth[i])) / 2.0**i for i in range(self.n)
-        ]
-        r_disp_loss = [
-            torch.mean(torch.abs(r_smooth[i])) / 2.0**i for i in range(self.n)
-        ]
+        l_disp_loss = torch.mean(torch.abs(l_smooth))
+        r_disp_loss = torch.mean(torch.abs(r_smooth))
 
         im_loss = sum(l_im_loss + r_im_loss)
         lr_loss = sum(l_lr_loss + r_lr_loss)
@@ -106,38 +87,20 @@ class MonocularLoss(nn.Module):
     def _r_image(self, img, disp):
         return self._apply(img, disp)
 
-    def _pyramid(self, img):
-        imgs = [img]
-        _, _, h, w = img.shape
-        for i in range(self.n - 1):
-            r = 2 ** (i - 1)
-            imgs.append(
-                F.interpolate(
-                    img, size=(int(h // r), int(w // r)), mode="bilinear", align_corners=True
-                )
-            )
-        return imgs
+    def _smoothness(self, disp, im):
+        d_grad_x = self._grad_x(disp)
+        d_grad_y = self._grad_y(disp)
 
-    def _smoothness(self, disp, stack):
-        d_grad_x = [self._grad_x(d) for d in disp]
-        d_grad_y = [self._grad_y(d) for d in disp]
+        im_grad_x = self._grad_x(im)
+        im_grad_y = self._grad_y(im)
 
-        im_grad_x = [self._grad_x(im) for im in stack]
-        im_grad_y = [self._grad_y(im) for im in stack]
+        w_x = torch.exp(-torch.mean(torch.abs(d_grad_x), 1, keepdim=True))
+        w_y = torch.exp(-torch.mean(torch.abs(d_grad_y), 1, keepdim=True))
 
-        w_x = [
-            torch.exp(-torch.mean(torch.abs(grad), 1, keepdim=True))
-            for grad in im_grad_x
-        ]
-        w_y = [
-            torch.exp(-torch.mean(torch.abs(grad), 1, keepdim=True))
-            for grad in im_grad_y
-        ]
+        smooth_x = d_grad_x * w_x
+        smooth_y = d_grad_y * w_y
 
-        smooth_x = [d_grad_x[i] * w_x[i] for i in range(self.n)]
-        smooth_y = [d_grad_y[i] * w_y[i] for i in range(self.n)]
-
-        return [torch.abs(smooth_x[i]) + torch.abs(smooth_y[i]) for i in range(self.n)]
+        return torch.abs(smooth_x) + torch.abs(smooth_y)
 
     def _ssim(self, l, r):
         pool = nn.AvgPool2d(3, 1)
