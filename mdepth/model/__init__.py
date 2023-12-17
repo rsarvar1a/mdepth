@@ -24,7 +24,7 @@ class MonocularDepth(nn.Module):
         Returns a depth image for each input image.
         """
         size = x.shape[-2:]
-        encoded = list(map(lambda e: self._interpolate(e, size=size), self.encoder(x)))
+        encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded
 
