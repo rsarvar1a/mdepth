@@ -35,9 +35,8 @@ class DepthDecoder(nn.Module):
 
         conv1s = []
         conv2s = []
-        disps = []
 
-        for i in range(self.length):
+        for i in range(self.length -1, -1, -1):
             conv1s.append(
                 Block(
                     self.ichannels[-1]
@@ -54,17 +53,13 @@ class DepthDecoder(nn.Module):
                 )
             )
 
-            disps.append(
-                nn.Sequential(
-                    nn.ReflectionPad2d(1),
-                    nn.Conv2d(self.ochannels[i], 2, kernel_size=3),
-                    nn.Sigmoid(),
-                )
-            )
-
         self.conv1s = nn.ModuleList(conv1s)
         self.conv2s = nn.ModuleList(conv2s)
-        self.disps = nn.ModuleList(disps)
+        self.reduce = nn.Sequential(
+            nn.ReflectionPad2d(1),
+            nn.Conv2d(self.ochannels[0], 2, kernel_size=3),
+            nn.Sigmoid(),
+        )
 
     def forward(self, features: list[Tensor]) -> list[Tensor]:
         """
@@ -72,7 +67,6 @@ class DepthDecoder(nn.Module):
         """
         x = features[-1]
         size = x.shape[-2:]
-        out = []
 
         for i in range(self.length - 1, -1, -1):
             x = self.conv1s[i](x)
@@ -80,10 +74,9 @@ class DepthDecoder(nn.Module):
             x += [features[i - 1]] if i > 0 else []
             x = cat(x, 1)
             x = self.conv2s[i](x)
-            out.append(self.disps[i](x))
 
         # Drop the last one.
-        return out[::-1][:-1]
+        return self.reduce(x)
 
     def _interpolate(self, x: Tensor, *, size) -> Tensor:
         """
