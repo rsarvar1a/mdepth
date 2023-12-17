@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import tqdm
 
 
 def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False) -> list[float]:
@@ -16,7 +17,7 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
         
         total_loss = 0.
         
-        for batch, data in enumerate(dataloader):
+        for batch, data in tqdm(enumerate(dataloader), unit="batch", total=len(dataloader)):
             
             optimizer.zero_grad()
             
