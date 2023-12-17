@@ -31,7 +31,7 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
             loss_term = loss(disparity_maps, [l_images, r_images])
             
             # Update the loss by adding the average loss of the batch.
-            total_loss += float(loss_term) / float(l_images.shape[0])
+            total_loss += float(loss_term.item()) / float(l_images.shape[0])
             
             # Train the model.
             loss_term.backward()            

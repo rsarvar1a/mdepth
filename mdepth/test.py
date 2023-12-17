@@ -30,7 +30,7 @@ def test (model, *, dataloader, device, loss, num_samples):
                 depth_map.squeeze(0).cpu().numpy() # h, w
             ])
             
-            total_loss += float(loss_term) / float(l_image.shape[0])
+            total_loss += float(loss_term.item()) / float(l_image.shape[0])
     
         total_loss /= (batch + 1)
     
