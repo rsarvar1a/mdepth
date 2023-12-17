@@ -48,7 +48,7 @@ def train (model, *, dataloader, device, epochs, loss, optimizer, silent = False
                 "Epoch {epoch}: {seconds} sec, {loss} loss".format(
                     epoch=str(epoch + 1).rjust(3),
                     seconds=str(round(time_e - time_s)).rjust(4),
-                    loss=str(round(loss, 4)).rjust(5)
+                    loss=str(round(total_loss, 4)).rjust(5)
                 )
             )
     

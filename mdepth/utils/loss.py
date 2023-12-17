@@ -88,7 +88,7 @@ class MonocularLoss(nn.Module):
         y_base = torch.linspace(0, 1, h).repeat(b, w, 1).transpose(1, 2).type_as(img)
 
         x_shifts = disp[:, 0, :, :]
-        field = torch.stack((x_base * x_shifts, y_base), dim=3)
+        field = torch.stack((x_base + x_shifts, y_base), dim=3)
         out = F.grid_sample(img, 2 * field - 1, mode="bilinear", padding_mode="zeros")
         return out
 
