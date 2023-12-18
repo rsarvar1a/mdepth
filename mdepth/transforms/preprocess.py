@@ -53,7 +53,44 @@ class JointRandomResizeCrop(object):
 
         return (left, right)
 
+class JointRandomFlip(object):
+    def __init__(self, p=0.5):
+        self.p = p
 
+    def __call__(self, left, right):
+        r = torch.FloatTensor(1,).uniform_(0, 1).item()
+
+        if r <= self.p:
+            return (tF.hflip(left), tF.hflip(right))
+        else:
+            return (left, right)
+
+class JointRandomAugment(object):
+    def __init__(self, gamma=(0.8, 1.2), brightness=(0.5, 2.0), color=(0.8, 1.2), prob=0.5):
+        self.gamma, self.brightness, self.color, self.p = gamma, brightness, color, prob
+
+    def _augment_pair(self, left, right):
+        random_gamma = torch.FloatTensor(1,).uniform_(self.gamma).item()
+        random_bright = torch.FloatTensor(1,).uniform_(self.brightness).item()
+        random_color_shift = torch.FloatTensor(3,).uniform_(self.color)
+
+        left, right = left ** random_gamma, right ** random_gamma
+        left, right = left * random_bright, right * random_bright
+
+        for i in range(3):
+            left[:, i, :, :] *= random_color_shift[i].item()
+            right[:, i, :, :] *= random_color_shift[i].item()
+
+        return (left, right)
+
+    def __call__(self, left, right):
+        r =  torch.FloatTensor(1,1).uniform_(0, 1).item()
+
+        if r <= self.p: 
+            return self._augment_pair(left, right)
+        else:
+            return (left, right)
+            
 class JointNormalize(object):
     def __init__(self, mu, sigma):
         self.mu = mu
