@@ -36,7 +36,7 @@ class MonocularLoss(nn.Module):
             imgs.append(
                 F.interpolate(
                     img,
-                    size=(float(h // ratio), float(w // ratio)), 
+                    size=(int(h // ratio), int(w // ratio)), 
                     mode='bilinear',
                     align_corners=True
                 )
