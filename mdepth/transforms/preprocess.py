@@ -73,9 +73,9 @@ class JointRandomAugment(object):
         self.gamma, self.brightness, self.color, self.p = gamma, brightness, color, prob
 
     def _augment_pair(self, left, right):
-        random_gamma = torch.FloatTensor(1,).uniform_(self.gamma).item()
-        random_bright = torch.FloatTensor(1,).uniform_(self.brightness).item()
-        random_color_shift = torch.FloatTensor(3,).uniform_(self.color)
+        random_gamma = torch.FloatTensor(1,).uniform_(*self.gamma).item()
+        random_bright = torch.FloatTensor(1,).uniform_(*self.brightness).item()
+        random_color_shift = torch.FloatTensor(3,).uniform_(*self.color)
 
         left, right = left ** random_gamma, right ** random_gamma
         left, right = left * random_bright, right * random_bright
