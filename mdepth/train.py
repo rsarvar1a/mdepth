@@ -15,6 +15,7 @@ def train(
         time_s = time.perf_counter()
 
         total_loss = 0.0
+        ap = 0.0; ds = 0.0; lr = 0.0
 
         for batch, data in tqdm.tqdm(
             enumerate(dataloader), unit="batch", total=len(dataloader)
@@ -32,6 +33,7 @@ def train(
 
             # Update the loss by adding the average loss of the batch.
             total_loss += float(loss_term.item()) / float(l_images.shape[0])
+            ap += loss.loss_ap; ds += loss.loss_ds; lr += loss.loss_lr
 
             # Train the model.
             loss_term.backward()
@@ -40,7 +42,9 @@ def train(
         # The loss is the average loss per batch over all batches, rather than the sum
         # over all batches.
         total_loss /= batch + 1
-        losses.append(total_loss)
+        ap /= batch + 1; ds /= batch + 1; lr /= batch + 1
+        
+        losses.append((total_loss, ap, ds, lr))
 
         time_e = time.perf_counter()
 
@@ -58,12 +62,27 @@ def train(
 
 
 def display_loss_graph(losses):
-    plt.figure(figsize=(12, 8))
-
-    ax = plt.subplot(111)
+    
+    main, ap, ds, lr = zip(losses)
+    
+    plt.figure(figsize=(12, 9))
+    
+    ax = plt.subplot(121)
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss")
-    ax.set_title("training loss")
-    ax.plot(losses)
-
+    ax.set_title("proportional loss")
+    ax.plot(main / main[0], label="total loss")
+    ax.plot(ap / ap[0], label="image loss")
+    ax.plot(ds / ds[0], label="disparity smoothness loss")
+    ax.plot(lr / lr[0], label="LR-consistency loss")
+    
+    ax = plt.subplot(122)
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("loss")
+    ax.set_title("absolute loss")
+    ax.plot(main, label="total loss")
+    ax.plot(ap, label="image loss")
+    ax.plot(ds, label="disparity smoothness loss")
+    ax.plot(lr, label="LR-consistency loss")
+    
     plt.show()
