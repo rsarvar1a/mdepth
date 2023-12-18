@@ -1,4 +1,5 @@
 import math
+import torch
 import torchvision.transforms as tf
 import torchvision.transforms.functional as tf_func
 import torch.nn.functional as F
@@ -53,6 +54,7 @@ class JointRandomResizeCrop(object):
 
         return (left, right)
 
+
 class JointRandomFlip(object):
     def __init__(self, p=0.5):
         self.p = p
@@ -61,9 +63,10 @@ class JointRandomFlip(object):
         r = torch.FloatTensor(1,).uniform_(0, 1).item()
 
         if r <= self.p:
-            return (tF.hflip(left), tF.hflip(right))
+            return (tf_func.hflip(left), tf_func.hflip(right))
         else:
             return (left, right)
+
 
 class JointRandomAugment(object):
     def __init__(self, gamma=(0.8, 1.2), brightness=(0.5, 2.0), color=(0.8, 1.2), prob=0.5):
@@ -90,6 +93,7 @@ class JointRandomAugment(object):
             return self._augment_pair(left, right)
         else:
             return (left, right)
+        
             
 class JointNormalize(object):
     def __init__(self, mu, sigma):
