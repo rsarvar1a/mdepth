@@ -110,11 +110,11 @@ class DepthDecoder(nn.Module):
         l = len(self.uconvs)
 
         for i in range(l - 1, -1, -1):
-            
-            print(f"shape at {i}: {x.shape[-3:]}")
-            
+                        
             # Perform the upscaling convolution.
             uconvx = self.uconvs[i](x)
+
+            print(f"shapes at {i}: x {list(x.shape[-3:])}, u {list(uconvx.shape[-3:])}")
 
             # Take the result of the upconv, and add in whatever we have available:
             # If the last set of layers produced an auxiliary disparity map, include it.
