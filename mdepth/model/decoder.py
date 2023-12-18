@@ -14,7 +14,7 @@ class Block(nn.Sequential):
         super().__init__(
             nn.ReflectionPad2d(1),
             nn.Conv2d(ich, och, kernel_size=3),
-            nn.ReLU(inplace=True),
+            nn.ELU(inplace=True),
         )
 
 
