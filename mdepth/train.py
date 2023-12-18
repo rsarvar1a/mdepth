@@ -46,10 +46,10 @@ def train(
 
         if not silent:
             print(
-                "Epoch {epoch}: {seconds} sec, {loss} loss".format(
-                    epoch=str(epoch + 1).rjust(3),
-                    seconds=str(round(time_e - time_s)).rjust(4),
-                    loss=str(round(total_loss, 4)).rjust(5),
+                "Epoch {epoch}: {seconds} sec, {loss} loss\n".format(
+                    epoch=str(epoch + 1).zfill(3),
+                    seconds=str(round(time_e - time_s)).zfill(4),
+                    loss=str(round(total_loss, 4)).zfill(6),
                 )
             )
 

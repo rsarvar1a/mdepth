@@ -34,7 +34,7 @@ def test(model, *, dataloader, device, loss, num_samples):
 
         total_loss /= batch + 1
 
-    return total_loss
+    return total_loss, samples
 
 
 def show_results(samples):
@@ -46,14 +46,14 @@ def show_results(samples):
     for sample in samples:
         
         imagL, imagR, disps = sample
-        plt.figure(figsize=(18, 10))
+        plt.figure(figsize=(18, 8))
 
         plt.subplot(221)
         plt.imshow(transform_image(imagL))
         plt.title("Left Image (input)")
         plt.axis("off")
         
-        plt.subplot(221)
+        plt.subplot(222)
         plt.imshow(transform_image(imagR))
         plt.title("Right Image")
         plt.axis("off")
