@@ -16,15 +16,15 @@ class ImageEncoder(nn.Module):
 
         # Build the model by decomposing ResNet; this is necessary because we'd
         # like to hook into the model between layer calls and save intermediate results.
-        self.resnet = resnet101(weights=ResNet101_Weights.IMAGENET1K_V2)
-        self.conv1 = self.resnet.conv1
-        self.norm1 = self.resnet.bn1
-        self.relu1 = self.resnet.relu
-        self.pool1 = self.resnet.maxpool
-        self.layer1 = self.resnet.layer1
-        self.layer2 = self.resnet.layer2
-        self.layer3 = self.resnet.layer3
-        self.layer4 = self.resnet.layer4
+        resnet = resnet101(weights=ResNet101_Weights.IMAGENET1K_V2)
+        self.conv1  = resnet.conv1
+        self.norm1  = resnet.bn1
+        self.relu1  = resnet.relu
+        self.pool1  = resnet.maxpool
+        self.layer1 = resnet.layer1
+        self.layer2 = resnet.layer2
+        self.layer3 = resnet.layer3
+        self.layer4 = resnet.layer4
 
         # Compute the number of channels in each layer's output, so we can use them
         # as parameters while constructing the network heads.
