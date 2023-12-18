@@ -44,7 +44,7 @@ class ImageEncoder(nn.Module):
         feature_maps.append(x)
         x = self.layer3(x)
         feature_maps.append(x)
-        x = self.layer4(x)
-        feature_maps.append(x)
+        # x = self.layer4(x)
+        # feature_maps.append(x)
 
         return feature_maps
