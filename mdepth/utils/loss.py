@@ -12,7 +12,7 @@ class MonocularLoss(nn.Module):
     the left and right images separately.
     """
 
-    def __init__(self, *, n=4, weight_ssim=0.85, weight_disp=1.0, weight_lr=1.0):
+    def __init__(self, *, n=4, weight_ssim=0.85, weight_disp=0.1, weight_lr=1.0):
         """
         Creates a new loss with the given subloss weights for the disparity pyramid
         of the given height.
