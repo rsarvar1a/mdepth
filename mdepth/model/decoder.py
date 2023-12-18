@@ -114,8 +114,6 @@ class DepthDecoder(nn.Module):
             # Perform the upscaling convolution.
             uconvx = self.uconvs[i](x)
 
-            print(f"shapes at {i}: x {list(x.shape[-3:])}, u {list(uconvx.shape[-3:])}, feat {list(features[i - 1].shape[-3:]) if i > 0 else None}")
-
             # Take the result of the upconv, and add in whatever we have available:
             # If the last set of layers produced an auxiliary disparity map, include it.
             # If we have a skip connection from the previous encoding layer, use it.
