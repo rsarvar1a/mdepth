@@ -1,3 +1,4 @@
+import math
 import torchvision.transforms as tf
 import torchvision.transforms.functional as tf_func
 
@@ -63,6 +64,18 @@ class JointNormalize(object):
             tf_func.normalize(right, mean=self.mu, std=self.sigma),
         )
 
+
+class JointRoundBy(object):
+    def __init__(self, base):
+        self.base = float(base)
+    
+    def __call__(self, left, right):
+        h, w = left.shape[-2:]
+        new_h, new_w = int(math.ceil(h / self.base) * self.base), int(math.ceil(w / self.base) * self.base)
+        return (
+            tf_func.interpolate(left, size=(h, w), mode='bilinear', align_corners=True),
+            tf_func.interpolate(right, size=(h, w), mode='bilinear', align_corners=True),
+        )
 
 class JointCompose(object):
     def __init__(self, transforms):
