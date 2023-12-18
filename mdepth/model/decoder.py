@@ -110,6 +110,9 @@ class DepthDecoder(nn.Module):
         l = len(self.uconvs)
 
         for i in range(l - 1, -1, -1):
+            
+            print(f"shape at {i}: {x.shape[-3:]}")
+            
             # Perform the upscaling convolution.
             uconvx = self.uconvs[i](x)
 
@@ -121,6 +124,8 @@ class DepthDecoder(nn.Module):
                 cat_list.append(features[i - 1])
             if prev_disparity is not None:
                 cat_list.append(prev_disparity)
+            if len(cat_list) == 1:
+                cat_list = cat_list[0]
             concat = cat(cat_list, dim=1)
 
             x = self.iconvs[i](concat)
