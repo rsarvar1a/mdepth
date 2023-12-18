@@ -1,6 +1,7 @@
 import math
 import torchvision.transforms as tf
 import torchvision.transforms.functional as tf_func
+import torch.nn.functional as F
 
 
 class JointToTensor(object):
@@ -73,8 +74,8 @@ class JointRoundBy(object):
         h, w = left.shape[-2:]
         new_h, new_w = int(math.ceil(h / self.base) * self.base), int(math.ceil(w / self.base) * self.base)
         return (
-            tf_func.interpolate(left, size=(h, w), mode='bilinear', align_corners=True),
-            tf_func.interpolate(right, size=(h, w), mode='bilinear', align_corners=True),
+            F.interpolate(left, size=(h, w), mode='bilinear', align_corners=True),
+            F.interpolate(right, size=(h, w), mode='bilinear', align_corners=True),
         )
 
 class JointCompose(object):
