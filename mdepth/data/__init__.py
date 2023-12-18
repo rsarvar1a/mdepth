@@ -14,7 +14,6 @@ class KittiDataset(Dataset):
     """
 
     def __init__(self, path, mode="train", transforms=None):
-        
         l_path = os.path.join(path, f"{mode}ing", "image_2")
         r_path = os.path.join(path, f"{mode}ing", "image_3")
         self.l_images = sorted([os.path.join(l_path, f) for f in os.listdir(l_path)])
@@ -23,14 +22,12 @@ class KittiDataset(Dataset):
         self.transforms = transforms
 
     def __len__(self):
-        
         return len(self.l_images)
 
     def __getitem__(self, index):
-        
         l = Image.open(self.l_images[index])
         r = Image.open(self.r_images[index])
-        
+
         if self.transforms:
             for t in self.transforms:
                 l, r = t(l, r)
