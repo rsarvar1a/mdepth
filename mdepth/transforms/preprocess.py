@@ -74,8 +74,8 @@ class JointRoundBy(object):
         h, w = left.shape[-2:]
         new_h, new_w = int(math.ceil(h / self.base) * self.base), int(math.ceil(w / self.base) * self.base)
         return (
-            F.interpolate(left, size=(h, w), mode='bilinear', align_corners=True),
-            F.interpolate(right, size=(h, w), mode='bilinear', align_corners=True),
+            F.interpolate(left[None], size=(h, w), mode='bilinear', align_corners=True).squeeze(dim=0),
+            F.interpolate(right[None], size=(h, w), mode='bilinear', align_corners=True).squeeze(dim=0),
         )
 
 class JointCompose(object):
