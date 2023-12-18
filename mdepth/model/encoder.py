@@ -23,6 +23,8 @@ class ImageEncoder(nn.Module):
         self.pool1 = self.resnet.maxpool
         self.layer1 = self.resnet.layer1
         self.layer2 = self.resnet.layer2
+        self.layer3 = self.resnet.layer3
+        self.layer4 = self.resnet.layer4
 
         # Compute the number of channels in each layer's output, so we can use them
         # as parameters while constructing the network heads.
@@ -39,6 +41,10 @@ class ImageEncoder(nn.Module):
         x = self.layer1(x)
         feature_maps.append(x)
         x = self.layer2(x)
+        feature_maps.append(x)
+        x = self.layer3(x)
+        feature_maps.append(x)
+        x = self.layer4(x)
         feature_maps.append(x)
 
         return feature_maps

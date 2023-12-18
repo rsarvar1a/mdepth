@@ -76,7 +76,7 @@ class DepthDecoder(nn.Module):
             x = self.conv2s[i](x)
 
         # Drop the last one.
-        return self.reduce(x)
+        return 0.3 * self.reduce(x)
 
     def _interpolate(self, x: Tensor, *, size) -> Tensor:
         """
