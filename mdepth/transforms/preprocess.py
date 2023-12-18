@@ -78,6 +78,18 @@ class JointRoundBy(object):
             F.interpolate(right[None], size=(h, w), mode='bilinear', align_corners=True).squeeze(dim=0),
         )
 
+
+class JointResize(object):
+    def __init__ (self, size):
+        self.size = size
+        
+    def __call__(self, left, right):
+        return (
+            tf.Resize(self.size)(left[None]).squeeze(dim=0),
+            tf.Resize(self.size)(right[None]).squeeze(dim=0)
+        )
+
+
 class JointCompose(object):
     def __init__(self, transforms):
         """

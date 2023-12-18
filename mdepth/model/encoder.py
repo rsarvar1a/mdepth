@@ -64,9 +64,8 @@ class ResidualBlock(nn.Module):
         super().__init__()
 
         layers = [ResidualConv(ich=ich, och=och, stride=stride)]
-        for _ in range(1, num_blocks - 1):
+        for _ in range(1, num_blocks):
             layers.append(ResidualConv(ich=4 * och, och=och, stride=1))
-        layers.append(ResidualConv(ich=4 * och, och=och, stride=1))
         self.layers = nn.ModuleList(layers)
 
     def forward(self, x: Tensor) -> Tensor:
