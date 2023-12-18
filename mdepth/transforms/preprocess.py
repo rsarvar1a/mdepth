@@ -85,8 +85,8 @@ class JointResize(object):
         
     def __call__(self, left, right):
         return (
-            tf.Resize(self.size)(left[None]).squeeze(dim=0),
-            tf.Resize(self.size)(right[None]).squeeze(dim=0)
+            tf.Resize(self.size, antialias=True)(left[None]).squeeze(dim=0),
+            tf.Resize(self.size, antialias=True)(right[None]).squeeze(dim=0)
         )
 
 

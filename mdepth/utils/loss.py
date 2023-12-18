@@ -71,7 +71,7 @@ class MonocularLoss(nn.Module):
 
         x_shifts = disp[:, 0, :, :]
         flow_field = torch.stack((x_base + x_shifts, y_base), dim=3)
-        output = F.grid_sample(img, 2 * flow_field - 1, mode='bilinear', padding_mode='zeros')
+        output = F.grid_sample(img, 2 * flow_field - 1, mode='bilinear', padding_mode='zeros', align_corners=True)
 
         return output
 
