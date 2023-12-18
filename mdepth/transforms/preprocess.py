@@ -81,9 +81,12 @@ class JointRandomAugment(object):
         left, right = left * random_bright, right * random_bright
 
         for i in range(3):
-            left[:, i, :, :] *= random_color_shift[i].item()
-            right[:, i, :, :] *= random_color_shift[i].item()
+            left[i, :, :] *= random_color_shift[i].item()
+            right[i, :, :] *= random_color_shift[i].item()
 
+        left = torch.clamp(left, 0, 1)
+        right = torch.clamp(right, 0, 1)
+        
         return (left, right)
 
     def __call__(self, left, right):
