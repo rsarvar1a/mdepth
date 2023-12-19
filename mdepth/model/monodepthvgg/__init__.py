@@ -8,9 +8,9 @@ class MonodepthVGG(nn.Module):
     A monocular depth model with a VGG encoder.
     """
 
-    def __init__(self):
+    def __init__(self, batch_norm=False):
         super().__init__()
-        self.encoder = VGGEncoder()
+        self.encoder = VGGEncoder(batch_norm=batch_norm)
         self.decoder = VGGDecoder()
 
     def forward(self, left):

@@ -6,18 +6,18 @@ from .blocks import *
 
 
 class VGGEncoder(nn.Module):
-    def __init__(self):
+    def __init__(self, batch_norm=False):
         super().__init__()
 
         self.encoder = nn.ModuleList(
             [
-                ConvBlock(3, 32, 7),  # conv1b
-                ConvBlock(32, 64, 5),  # conv2b
-                ConvBlock(64, 128, 3),  # conv3b
-                ConvBlock(128, 256, 3),  # conv4b
-                ConvBlock(256, 512, 3),  # conv5b
-                ConvBlock(512, 512, 3),  # conv6b
-                ConvBlock(512, 512, 3),  # conv7b
+                ConvBlock(3, 32, 7, batch_norm=batch_norm),  # conv1b
+                ConvBlock(32, 64, 5, batch_norm=batch_norm),  # conv2b
+                ConvBlock(64, 128, 3, batch_norm=batch_norm),  # conv3b
+                ConvBlock(128, 256, 3, batch_norm=batch_norm),  # conv4b
+                ConvBlock(256, 512, 3, batch_norm=batch_norm),  # conv5b
+                ConvBlock(512, 512, 3, batch_norm=batch_norm),  # conv6b
+                ConvBlock(512, 512, 3, batch_norm=batch_norm),  # conv7b
             ]
         )
 

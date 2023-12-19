@@ -31,11 +31,11 @@ class Conv(nn.Module):
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, ich, och, kernel_size):
+    def __init__(self, ich, och, kernel_size, batch_norm=False):
         super().__init__()
 
-        self.conv1 = Conv(ich, och, kernel_size, 1)
-        self.conv2 = Conv(och, och, kernel_size, 2)
+        self.conv1 = Conv(ich, och, kernel_size, 1, batch_norm=batch_norm)
+        self.conv2 = Conv(och, och, kernel_size, 2, batch_norm=batch_norm)
 
     def forward(self, x):
         conv1 = self.conv1(x)

@@ -101,7 +101,7 @@ class MonocularLoss(nn.Module):
         C1 = 0.01**2
         C2 = 0.03**2
 
-        pool = nn.AvgPool2d(3, 1)
+        pool = lambda x: F.avg_pool2d(x, 3, stride=1)
 
         mu_l = pool(l)
         mu_r = pool(r)
