@@ -44,6 +44,7 @@ def test(model, *, dataloader, device, loss, num_samples):
                     [
                         l_image.squeeze().cpu().numpy(),  # 3, h, w
                         r_image.squeeze().cpu().numpy(),  # 3, h, w
+                        displ, # h, w
                         disp,  # h, w
                     ]
                 )
@@ -58,10 +59,9 @@ def test(model, *, dataloader, device, loss, num_samples):
 def show_results(samples):
     transform_image = lambda im: im.transpose(1, 2, 0)
     transform_disps = lambda im: im
-    transform_depth = lambda im: DisparityToDepth(0.1, 100)(im)
 
     for sample in samples:
-        imagL, imagR, disps = sample
+        imagL, imagR, disps, disps_pp = sample
         plt.figure(figsize=(18, 8))
 
         plt.subplot(221)
@@ -85,11 +85,11 @@ def show_results(samples):
 
         plt.subplot(224)
         plt.imshow(
-            transform_depth(disps),
+            transform_disps(disps_pp),
             cmap="magma",
-            vmax=np.percentile(transform_depth(disps), 95),
+            vmax=np.percentile(transform_disps(disps_pp), 95),
         )
-        plt.title("Depth")
+        plt.title("Postprocessed")
         plt.axis("off")
 
         plt.show()
