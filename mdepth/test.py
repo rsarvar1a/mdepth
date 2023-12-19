@@ -11,7 +11,7 @@ def postprocess(disp, dprime):
     
     h, w   = disp.shape
     l_disp = disp
-    r_disp = np.fliplr(dprime)
+    r_disp = dprime
     m_disp = 0.5 * (l_disp + r_disp)
     l, _ = np.meshgrid(np.linspace(0, 1, w), np.linspace(0, 1, h))
     l_mask = 1.0 - np.clip(20 * (l - 0.05), 0, 1)
@@ -59,22 +59,23 @@ def test(model, *, dataloader, device, loss, num_samples):
 def show_results(samples):
     transform_image = lambda im: im.transpose(1, 2, 0)
     transform_disps = lambda im: im
+    transform_depth = lambda im: DisparityToDepth(0.1, 100)(im)
 
     for sample in samples:
         imagL, imagR, disps, disps_pp = sample
-        plt.figure(figsize=(20, 4))
+        plt.figure(figsize=(20,8))
 
-        plt.subplot(141)
+        plt.subplot(231)
         plt.imshow(transform_image(imagL))
         plt.title("Left Image (input)")
         plt.axis("off")
 
-        plt.subplot(142)
+        plt.subplot(234)
         plt.imshow(transform_image(imagR))
         plt.title("Right Image")
         plt.axis("off")
 
-        plt.subplot(143)
+        plt.subplot(232)
         plt.imshow(
             transform_disps(disps),
             cmap="magma",
@@ -83,11 +84,29 @@ def show_results(samples):
         plt.title("Disparities")
         plt.axis("off")
 
-        plt.subplot(144)
+        plt.subplot(235)
         plt.imshow(
             transform_disps(disps_pp),
             cmap="magma",
             vmax=np.percentile(transform_disps(disps_pp), 95),
+        )
+        plt.title("Postprocessed")
+        plt.axis("off")
+        
+        plt.subplot(233)
+        plt.imshow(
+            transform_depth(disps),
+            cmap="magma",
+            vmax=np.percentile(transform_depth(disps), 95),
+        )
+        plt.title("Scaled Depth")
+        plt.axis("off")
+
+        plt.subplot(236)
+        plt.imshow(
+            transform_depth(disps_pp),
+            cmap="magma",
+            vmax=np.percentile(transform_depth(disps_pp), 95),
         )
         plt.title("Postprocessed")
         plt.axis("off")
