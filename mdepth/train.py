@@ -33,7 +33,7 @@ def train(
 
             # Update the loss by adding the average loss of the batch.
             total_loss += float(loss_term.item()) / float(l_images.shape[0])
-            ap += loss.loss_ap; ds += loss.loss_ds; lr += loss.loss_lr
+            ap += float(loss.loss_ap); ds += float(loss.loss_ds); lr += float(loss.loss_lr)
 
             # Train the model.
             loss_term.backward()
@@ -63,7 +63,8 @@ def train(
 
 def display_loss_graph(losses):
     
-    main, ap, ds, lr = zip(losses)
+    losses = zip(* losses)
+    main, ap, ds, lr = (np.array(l) for l in losses)
     
     plt.figure(figsize=(12, 9))
     
@@ -75,6 +76,7 @@ def display_loss_graph(losses):
     ax.plot(ap / ap[0], label="image loss")
     ax.plot(ds / ds[0], label="disparity smoothness loss")
     ax.plot(lr / lr[0], label="LR-consistency loss")
+    ax.legend(loc="upper right")
     
     ax = plt.subplot(122)
     ax.set_xlabel("epoch")
@@ -84,5 +86,6 @@ def display_loss_graph(losses):
     ax.plot(ap, label="image loss")
     ax.plot(ds, label="disparity smoothness loss")
     ax.plot(lr, label="LR-consistency loss")
+    ax.legend(loc="upper right")
     
     plt.show()
