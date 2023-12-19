@@ -35,13 +35,12 @@ def test(model, *, dataloader, device, loss, num_samples):
             loss_term = loss(disparities, [l_image, r_image])
 
             if batch in indices:
-                disp = disparities[0].cpu().squeeze(dim=0).numpy()  # 2, h, w
-                disparity_map = postprocess(disp)  # h, w
+                disp = disparities[0].cpu().squeeze(dim=0).numpy()[0]  # h, w
                 samples.append(
                     [
                         l_image.squeeze().cpu().numpy(),  # 3, h, w
                         r_image.squeeze().cpu().numpy(),  # 3, h, w
-                        disparity_map,  # h, w
+                        disp,  # h, w
                     ]
                 )
 
