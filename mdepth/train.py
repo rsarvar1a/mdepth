@@ -60,7 +60,7 @@ def train(
                 "Epoch {epoch}: {seconds} sec, {loss} loss\n".format(
                     epoch=str(epoch + 1).zfill(3),
                     seconds=str(round(time_e - time_s)).zfill(4),
-                    loss=str(round(total_loss, 4)).zfill(6),
+                    loss=str(round(total_loss, 4)).ljust(6, '0'),
                 )
             )
 
