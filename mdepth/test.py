@@ -36,7 +36,10 @@ def test(model, *, dataloader, device, loss, num_samples):
             loss_term = loss(disparities, [l_image, r_image])
 
             if batch in indices:
-                disp = disparities[0].cpu().squeeze(dim=0).numpy()[0]  # h, w
+                
+                displ = disparities[0].cpu().squeeze(dim=0).numpy()[0]  # h, w
+                dispr = model(torch.fliplr(l_image))[0].cpu().squeeze(dim=0).numpy()[0]
+                disp = postprocess(displ, dispr) # h, w
                 samples.append(
                     [
                         l_image.squeeze().cpu().numpy(),  # 3, h, w
