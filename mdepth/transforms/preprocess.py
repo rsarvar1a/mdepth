@@ -60,7 +60,13 @@ class JointRandomFlip(object):
         self.p = p
 
     def __call__(self, left, right):
-        r = torch.FloatTensor(1,).uniform_(0, 1).item()
+        r = (
+            torch.FloatTensor(
+                1,
+            )
+            .uniform_(0, 1)
+            .item()
+        )
 
         if r <= self.p:
             return (tf_func.hflip(left), tf_func.hflip(right))
@@ -69,15 +75,31 @@ class JointRandomFlip(object):
 
 
 class JointRandomAugment(object):
-    def __init__(self, gamma=(0.8, 1.2), brightness=(0.5, 2.0), color=(0.8, 1.2), prob=0.5):
+    def __init__(
+        self, gamma=(0.8, 1.2), brightness=(0.5, 2.0), color=(0.8, 1.2), prob=0.5
+    ):
         self.gamma, self.brightness, self.color, self.p = gamma, brightness, color, prob
 
     def _augment_pair(self, left, right):
-        random_gamma = torch.FloatTensor(1,).uniform_(*self.gamma).item()
-        random_bright = torch.FloatTensor(1,).uniform_(*self.brightness).item()
-        random_color_shift = torch.FloatTensor(3,).uniform_(*self.color)
+        random_gamma = (
+            torch.FloatTensor(
+                1,
+            )
+            .uniform_(*self.gamma)
+            .item()
+        )
+        random_bright = (
+            torch.FloatTensor(
+                1,
+            )
+            .uniform_(*self.brightness)
+            .item()
+        )
+        random_color_shift = torch.FloatTensor(
+            3,
+        ).uniform_(*self.color)
 
-        left, right = left ** random_gamma, right ** random_gamma
+        left, right = left**random_gamma, right**random_gamma
         left, right = left * random_bright, right * random_bright
 
         for i in range(3):
@@ -86,18 +108,18 @@ class JointRandomAugment(object):
 
         left = torch.clamp(left, 0, 1)
         right = torch.clamp(right, 0, 1)
-        
+
         return (left, right)
 
     def __call__(self, left, right):
-        r =  torch.FloatTensor(1,1).uniform_(0, 1).item()
+        r = torch.FloatTensor(1, 1).uniform_(0, 1).item()
 
-        if r <= self.p: 
+        if r <= self.p:
             return self._augment_pair(left, right)
         else:
             return (left, right)
-        
-            
+
+
 class JointNormalize(object):
     def __init__(self, mu, sigma):
         self.mu = mu
@@ -113,24 +135,30 @@ class JointNormalize(object):
 class JointRoundBy(object):
     def __init__(self, base):
         self.base = float(base)
-    
+
     def __call__(self, left, right):
         h, w = left.shape[-2:]
-        new_h, new_w = int(math.ceil(h / self.base) * self.base), int(math.ceil(w / self.base) * self.base)
+        new_h, new_w = int(math.ceil(h / self.base) * self.base), int(
+            math.ceil(w / self.base) * self.base
+        )
         return (
-            F.interpolate(left[None], size=(h, w), mode='bilinear', align_corners=True).squeeze(dim=0),
-            F.interpolate(right[None], size=(h, w), mode='bilinear', align_corners=True).squeeze(dim=0),
+            F.interpolate(
+                left[None], size=(h, w), mode="bilinear", align_corners=True
+            ).squeeze(dim=0),
+            F.interpolate(
+                right[None], size=(h, w), mode="bilinear", align_corners=True
+            ).squeeze(dim=0),
         )
 
 
 class JointResize(object):
-    def __init__ (self, size):
+    def __init__(self, size):
         self.size = size
-        
+
     def __call__(self, left, right):
         return (
             tf.Resize(self.size, antialias=True)(left[None]).squeeze(dim=0),
-            tf.Resize(self.size, antialias=True)(right[None]).squeeze(dim=0)
+            tf.Resize(self.size, antialias=True)(right[None]).squeeze(dim=0),
         )
 
 

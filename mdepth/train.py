@@ -15,7 +15,9 @@ def train(
         time_s = time.perf_counter()
 
         total_loss = 0.0
-        ap = 0.0; ds = 0.0; lr = 0.0
+        ap = 0.0
+        ds = 0.0
+        lr = 0.0
 
         for batch, data in tqdm.tqdm(
             enumerate(dataloader), unit="batch", total=len(dataloader)
@@ -34,7 +36,9 @@ def train(
             # Update the loss by adding the average loss of the batch.
             s = float(l_images.shape[0])
             total_loss += float(loss_term.item()) / s
-            ap += float(loss.loss_ap) / s; ds += float(loss.loss_ds) / s; lr += float(loss.loss_lr) / s
+            ap += float(loss.loss_ap) / s
+            ds += float(loss.loss_ds) / s
+            lr += float(loss.loss_lr) / s
 
             # Train the model.
             loss_term.backward()
@@ -43,8 +47,10 @@ def train(
         # The loss is the average loss per batch over all batches, rather than the sum
         # over all batches.
         total_loss /= batch + 1
-        ap /= batch + 1; ds /= batch + 1; lr /= batch + 1
-        
+        ap /= batch + 1
+        ds /= batch + 1
+        lr /= batch + 1
+
         losses.append((total_loss, ap, ds, lr))
 
         time_e = time.perf_counter()
@@ -63,13 +69,12 @@ def train(
 
 
 def display_loss_graph(losses):
-    
-    losses = zip(* losses)
+    losses = zip(*losses)
     main, ap, ds, lr = (np.array(l) for l in losses)
-    
+
     plt.figure(figsize=(12, 9))
-    
-    ax = plt.subplot(121)
+
+    ax = plt.subplot(211)
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss")
     ax.set_title("proportional loss")
@@ -78,8 +83,8 @@ def display_loss_graph(losses):
     ax.plot(ds / ds[0], label="disparity smoothness loss")
     ax.plot(lr / lr[0], label="LR-consistency loss")
     ax.legend(loc="upper right")
-    
-    ax = plt.subplot(122)
+
+    ax = plt.subplot(212)
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss")
     ax.set_title("absolute loss")
@@ -88,5 +93,5 @@ def display_loss_graph(losses):
     ax.plot(ds, label="disparity smoothness loss")
     ax.plot(lr, label="LR-consistency loss")
     ax.legend(loc="upper right")
-    
+
     plt.show()

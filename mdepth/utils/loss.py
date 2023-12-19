@@ -1,4 +1,3 @@
-
 import torch
 
 from torch import nn, Tensor
@@ -29,19 +28,19 @@ class MonocularLoss(nn.Module):
         Generate a pyramid of images, scaled by powers of two.
         """
         h, w = img.shape[-2:]
-        
+
         imgs = [img]
         for i in range(self.n - 1):
             ratio = 2 ** (i + 1)
             imgs.append(
                 F.interpolate(
                     img,
-                    size=(int(h // ratio), int(w // ratio)), 
-                    mode='bilinear',
-                    align_corners=True
+                    size=(int(h // ratio), int(w // ratio)),
+                    mode="bilinear",
+                    align_corners=True,
                 )
             )
-        
+
         return imgs
 
     def _gradient_x(self, img):
@@ -71,7 +70,13 @@ class MonocularLoss(nn.Module):
 
         x_shifts = disp[:, 0, :, :]
         flow_field = torch.stack((x_base + x_shifts, y_base), dim=3)
-        output = F.grid_sample(img, 2 * flow_field - 1, mode='bilinear', padding_mode='zeros', align_corners=True)
+        output = F.grid_sample(
+            img,
+            2 * flow_field - 1,
+            mode="bilinear",
+            padding_mode="zeros",
+            align_corners=True,
+        )
 
         return output
 
@@ -93,8 +98,8 @@ class MonocularLoss(nn.Module):
         """
         Returns the SSIM loss of the two iamges.
         """
-        C1 = 0.01 ** 2
-        C2 = 0.03 ** 2
+        C1 = 0.01**2
+        C2 = 0.03**2
 
         pool = nn.AvgPool2d(3, 1)
 
@@ -123,13 +128,22 @@ class MonocularLoss(nn.Module):
         image_gradients_x = [self._gradient_x(img) for img in pyramid]
         image_gradients_y = [self._gradient_y(img) for img in pyramid]
 
-        weights_x = [torch.exp(-torch.mean(torch.abs(g), 1, keepdim=True)) for g in image_gradients_x]
-        weights_y = [torch.exp(-torch.mean(torch.abs(g), 1, keepdim=True)) for g in image_gradients_y]
+        weights_x = [
+            torch.exp(-torch.mean(torch.abs(g), 1, keepdim=True))
+            for g in image_gradients_x
+        ]
+        weights_y = [
+            torch.exp(-torch.mean(torch.abs(g), 1, keepdim=True))
+            for g in image_gradients_y
+        ]
 
         smoothness_x = [disp_gradients_x[i] * weights_x[i] for i in range(self.n)]
         smoothness_y = [disp_gradients_y[i] * weights_y[i] for i in range(self.n)]
 
-        return [torch.abs(smoothness_x[i]) + torch.abs(smoothness_y[i]) for i in range(self.n)]
+        return [
+            torch.abs(smoothness_x[i]) + torch.abs(smoothness_y[i])
+            for i in range(self.n)
+        ]
 
     def forward(self, disps, stereo):
         """
@@ -152,21 +166,43 @@ class MonocularLoss(nn.Module):
         l_smoothness = self._smoothness(l_disp_est, l_pyramid)
         r_smoothness = self._smoothness(r_disp_est, r_pyramid)
 
-        l_l1_loss = [torch.mean(torch.abs(l_est[i] - l_pyramid[i])) for i in range(self.n)]
-        r_l1_loss = [torch.mean(torch.abs(r_est[i] - r_pyramid[i])) for i in range(self.n)]
+        l_l1_loss = [
+            torch.mean(torch.abs(l_est[i] - l_pyramid[i])) for i in range(self.n)
+        ]
+        r_l1_loss = [
+            torch.mean(torch.abs(r_est[i] - r_pyramid[i])) for i in range(self.n)
+        ]
 
-        l_ssim_loss = [torch.mean(self._ssim(l_est[i], l_pyramid[i])) for i in range(self.n)]
-        r_ssim_loss = [torch.mean(self._ssim(r_est[i], r_pyramid[i])) for i in range(self.n)]
+        l_ssim_loss = [
+            torch.mean(self._ssim(l_est[i], l_pyramid[i])) for i in range(self.n)
+        ]
+        r_ssim_loss = [
+            torch.mean(self._ssim(r_est[i], r_pyramid[i])) for i in range(self.n)
+        ]
 
-        l_image_loss = [self.weight_ssim * l_ssim_loss[i] + (1 - self.weight_ssim) * l_l1_loss[i] for i in range(self.n)]
-        r_image_loss = [self.weight_ssim * r_ssim_loss[i] + (1 - self.weight_ssim) * r_l1_loss[i] for i in range(self.n)]
-        
-        l_lr_loss = [torch.mean(torch.abs(rl_disp[i] - l_disp_est[i])) for i in range(self.n)]
-        r_lr_loss = [torch.mean(torch.abs(lr_disp[i] - r_disp_est[i])) for i in range(self.n)]
+        l_image_loss = [
+            self.weight_ssim * l_ssim_loss[i] + (1 - self.weight_ssim) * l_l1_loss[i]
+            for i in range(self.n)
+        ]
+        r_image_loss = [
+            self.weight_ssim * r_ssim_loss[i] + (1 - self.weight_ssim) * r_l1_loss[i]
+            for i in range(self.n)
+        ]
 
-        l_disp_loss = [torch.mean(torch.abs(l_smoothness[i])) / 2 ** i for i in range(self.n)]
-        r_disp_loss = [torch.mean(torch.abs(r_smoothness[i])) / 2 ** i for i in range(self.n)]
-        
+        l_lr_loss = [
+            torch.mean(torch.abs(rl_disp[i] - l_disp_est[i])) for i in range(self.n)
+        ]
+        r_lr_loss = [
+            torch.mean(torch.abs(lr_disp[i] - r_disp_est[i])) for i in range(self.n)
+        ]
+
+        l_disp_loss = [
+            torch.mean(torch.abs(l_smoothness[i])) / 2**i for i in range(self.n)
+        ]
+        r_disp_loss = [
+            torch.mean(torch.abs(r_smoothness[i])) / 2**i for i in range(self.n)
+        ]
+
         image_loss = sum(l_image_loss + r_image_loss)
         lr_loss = sum(l_lr_loss + r_lr_loss)
         disp_loss = sum(l_disp_loss + r_disp_loss)

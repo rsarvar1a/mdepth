@@ -110,7 +110,6 @@ class DepthDecoder(nn.Module):
         l = len(self.uconvs)
 
         for i in range(l - 1, -1, -1):
-                        
             # Perform the upscaling convolution.
             uconvx = self.uconvs[i](x)
 
