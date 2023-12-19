@@ -177,5 +177,3 @@ class MonocularLoss(nn.Module):
 
         loss = image_loss + self.weight_disp * disp_loss + self.weight_lr * lr_loss
         return loss
-
-        

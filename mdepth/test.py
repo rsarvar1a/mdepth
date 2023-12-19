@@ -7,7 +7,20 @@ import tqdm
 from .transforms import DisparityToDepth
 
 
+def postprocess(disp):
+    
+    _, h, w = disp.shape
+    l_disp  = disp[0, :, :]
+    r_disp  = np.fliplr(disp[1, :, :])
+    m_disp  = 0.5 * (l_disp + r_disp)
+    l, _    = np.meshgrid(np.linspace(0, 1, w), np.linspace(0, 1, h))
+    l_mask  = 1.0 - np.clip(20 * (l - 0.05), 0, 1)
+    r_mask  = np.fliplr(l_mask)
+    
+    return r_mask * l_disp + l_mask * r_disp + (1.0 - l_mask - r_mask) * m_disp
+
 def test(model, *, dataloader, device, loss, num_samples):
+    
     model.eval()
 
     indices = random.sample(list(range(len(dataloader))), num_samples)
@@ -18,16 +31,17 @@ def test(model, *, dataloader, device, loss, num_samples):
         for batch, data in tqdm.tqdm(
             enumerate(dataloader), unit="batch", total=len(dataloader)
         ):
-            l_image, r_image = data[0].to(device), data[1].to(device)  # 1, 3, h, w
-            disparities = model(l_image)                               # [1, 2, h, w]
-            disparity_map = disparities[0][:, 0, :, :]                 # 1, 1, h, w
+            l_image, r_image = data[0].to(device), data[1].to(device)      # 1, 3, h, w
+            disparities = model(l_image)                                   # [1, 2, h, w]            
             loss_term = loss(disparities, [l_image, r_image])
 
             if batch in indices:
+                disp = disparities[0].cpu().squeeze(dim=0).numpy()         # 2, h, w
+                disparity_map = postprocess(disp)                          # h, w
                 samples.append([
-                    l_image.squeeze().cpu().numpy(),                   # 3, h, w
-                    r_image.squeeze().cpu().numpy(),                   # 3, h, w
-                    disparity_map.squeeze(0).cpu().numpy(),            # 1, h, w
+                    l_image.squeeze().cpu().numpy(),                       # 3, h, w
+                    r_image.squeeze().cpu().numpy(),                       # 3, h, w
+                    disparity_map                                          # 1, h, w
                 ])
 
             total_loss += float(loss_term.item()) / float(l_image.shape[0])
