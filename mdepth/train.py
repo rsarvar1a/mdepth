@@ -32,8 +32,9 @@ def train(
             loss_term = loss(disparity_maps, [l_images, r_images])
 
             # Update the loss by adding the average loss of the batch.
-            total_loss += float(loss_term.item()) / float(l_images.shape[0])
-            ap += float(loss.loss_ap); ds += float(loss.loss_ds); lr += float(loss.loss_lr)
+            s = float(l_images.shape[0])
+            total_loss += float(loss_term.item()) / s
+            ap += float(loss.loss_ap) / s; ds += float(loss.loss_ds) / s; lr += float(loss.loss_lr) / s
 
             # Train the model.
             loss_term.backward()

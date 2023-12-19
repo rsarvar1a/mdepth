@@ -41,7 +41,7 @@ def test(model, *, dataloader, device, loss, num_samples):
                 samples.append([
                     l_image.squeeze().cpu().numpy(),                       # 3, h, w
                     r_image.squeeze().cpu().numpy(),                       # 3, h, w
-                    disparity_map                                          # 1, h, w
+                    disparity_map                                          # h, w
                 ])
 
             total_loss += float(loss_term.item()) / float(l_image.shape[0])
