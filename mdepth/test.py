@@ -62,19 +62,19 @@ def show_results(samples):
 
     for sample in samples:
         imagL, imagR, disps, disps_pp = sample
-        plt.figure(figsize=(18, 8))
+        plt.figure(figsize=(20, 4))
 
-        plt.subplot(221)
+        plt.subplot(141)
         plt.imshow(transform_image(imagL))
         plt.title("Left Image (input)")
         plt.axis("off")
 
-        plt.subplot(222)
+        plt.subplot(142)
         plt.imshow(transform_image(imagR))
         plt.title("Right Image")
         plt.axis("off")
 
-        plt.subplot(223)
+        plt.subplot(143)
         plt.imshow(
             transform_disps(disps),
             cmap="magma",
@@ -83,7 +83,7 @@ def show_results(samples):
         plt.title("Disparities")
         plt.axis("off")
 
-        plt.subplot(224)
+        plt.subplot(144)
         plt.imshow(
             transform_disps(disps_pp),
             cmap="magma",
