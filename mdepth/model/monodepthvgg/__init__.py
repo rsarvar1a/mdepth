@@ -1,4 +1,4 @@
-from torch import nn
+from torch import nn, load, save
 
 from .components import VGGEncoder, VGGDecoder
 
@@ -17,3 +17,15 @@ class MonodepthVGG(nn.Module):
         skips = self.encoder(left)
         disps = self.decoder(skips)
         return disps
+
+    def load(self, path):
+        """
+        Loads the model from disk.
+        """
+        self.load_state_dict(load(path))
+
+    def save(self, path):
+        """
+        Saves a model to a PyTorch model file.
+        """
+        save(self.state_dict(), path)
