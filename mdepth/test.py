@@ -9,9 +9,9 @@ from .transforms import DisparityToDepth
 
 def postprocess(disp, dprime):
     
-    _, h, w = disp.shape
+    h, w   = disp.shape
     l_disp = disp
-    r_disp = dprime
+    r_disp = np.fliplr(dprime)
     m_disp = 0.5 * (l_disp + r_disp)
     l, _ = np.meshgrid(np.linspace(0, 1, w), np.linspace(0, 1, h))
     l_mask = 1.0 - np.clip(20 * (l - 0.05), 0, 1)
