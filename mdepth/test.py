@@ -63,7 +63,7 @@ def show_results(samples, cmap='plasma'):
 
     for sample in samples:
         imagL, imagR, disps, disps_pp = sample
-        plt.figure(figsize=(18,8))
+        plt.figure(figsize=(18,6))
 
         plt.subplot(231)
         plt.imshow(transform_image(imagL))
