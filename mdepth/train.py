@@ -72,9 +72,9 @@ def display_loss_graph(losses):
     losses = zip(*losses)
     main, ap, ds, lr = (np.array(l) for l in losses)
 
-    plt.figure(figsize=(12, 9))
+    plt.figure(figsize=(20, 6))
 
-    ax = plt.subplot(211)
+    ax = plt.subplot(121)
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss")
     ax.set_title("proportional loss")
@@ -84,7 +84,7 @@ def display_loss_graph(losses):
     ax.plot(lr / lr[0], label="LR-consistency loss")
     ax.legend(loc="upper right")
 
-    ax = plt.subplot(212)
+    ax = plt.subplot(122)
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss")
     ax.set_title("absolute loss")
