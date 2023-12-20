@@ -32,7 +32,7 @@ class VGGEncoder(nn.Module):
 
 
 class VGGDecoder(nn.Module):
-    def __init__(self):
+    def __init__(self, batch_norm=False):
         super().__init__()
 
         self.upconv7 = UpConv(512, 512)

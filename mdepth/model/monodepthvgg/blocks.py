@@ -44,11 +44,11 @@ class ConvBlock(nn.Module):
 
 
 class UpConv(nn.Module):
-    def __init__(self, ich, och, kernel_size=3, scale=2):
+    def __init__(self, ich, och, kernel_size=3, scale=2, batch_norm=False):
         super().__init__()
 
         self.scale = lambda x: F.interpolate(x, scale_factor=scale, mode="bilinear")
-        self.conv = Conv(ich, och, kernel_size, 1)
+        self.conv = Conv(ich, och, kernel_size, 1, batch_norm=batch_norm)
 
     def forward(self, x):
         upsample = self.scale(x)
@@ -56,9 +56,9 @@ class UpConv(nn.Module):
 
 
 class IConv(nn.Module):
-    def __init__(self, ich, och):
+    def __init__(self, ich, och, batch_norm=False):
         super().__init__()
-        self.conv = Conv(ich, och, 3, 1)
+        self.conv = Conv(ich, och, 3, 1, batch_norm=batch_norm)
 
     def forward(self, x):
         return self.conv(x)

@@ -11,7 +11,7 @@ class MonodepthVGG(nn.Module):
     def __init__(self, batch_norm=False):
         super().__init__()
         self.encoder = VGGEncoder(batch_norm=batch_norm)
-        self.decoder = VGGDecoder()
+        self.decoder = VGGDecoder(batch_norm=batch_norm)
 
     def forward(self, left):
         skips = self.encoder(left)
