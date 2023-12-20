@@ -20,7 +20,7 @@ def postprocess(disp, dprime):
     return r_mask * l_disp + l_mask * r_disp + (1.0 - l_mask - r_mask) * m_disp
 
 
-def test(model, *, dataloader, device, loss, num_samples):
+def test(model, *, dataloader, device, loss, num_samples, samples_only=False):
     model.eval()
 
     indices = random.sample(list(range(len(dataloader))), num_samples)
@@ -31,6 +31,9 @@ def test(model, *, dataloader, device, loss, num_samples):
         for batch, data in tqdm.tqdm(
             enumerate(dataloader), unit="batch", total=len(dataloader)
         ):
+            if samples_only and batch not in indices:
+                continue
+
             l_image, r_image = data[0].to(device), data[1].to(device)  # 1, 3, h, w
             disparities = model(l_image)  # [1, 2, h, w]
             loss_term = loss(disparities, [l_image, r_image])
