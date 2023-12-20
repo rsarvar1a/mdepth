@@ -56,14 +56,14 @@ def test(model, *, dataloader, device, loss, num_samples):
     return total_loss, samples
 
 
-def show_results(samples):
+def show_results(samples, cmap='plasma'):
     transform_image = lambda im: im.transpose(1, 2, 0)
     transform_disps = lambda im: im
     transform_depth = lambda im: DisparityToDepth(0.1, 100)(im)
 
     for sample in samples:
         imagL, imagR, disps, disps_pp = sample
-        plt.figure(figsize=(20,8))
+        plt.figure(figsize=(18,8))
 
         plt.subplot(231)
         plt.imshow(transform_image(imagL))
@@ -78,7 +78,7 @@ def show_results(samples):
         plt.subplot(232)
         plt.imshow(
             transform_disps(disps),
-            cmap="magma",
+            cmap=cmap,
             vmax=np.percentile(transform_disps(disps), 95),
         )
         plt.title("Disparities")
@@ -87,7 +87,7 @@ def show_results(samples):
         plt.subplot(235)
         plt.imshow(
             transform_disps(disps_pp),
-            cmap="magma",
+            cmap=cmap,
             vmax=np.percentile(transform_disps(disps_pp), 95),
         )
         plt.title("Postprocessed")
@@ -96,7 +96,7 @@ def show_results(samples):
         plt.subplot(233)
         plt.imshow(
             transform_depth(disps),
-            cmap="magma",
+            cmap=cmap,
             vmax=np.percentile(transform_depth(disps), 95),
         )
         plt.title("Scaled Depth")
@@ -105,7 +105,7 @@ def show_results(samples):
         plt.subplot(236)
         plt.imshow(
             transform_depth(disps_pp),
-            cmap="magma",
+            cmap=cmap,
             vmax=np.percentile(transform_depth(disps_pp), 95),
         )
         plt.title("Postprocessed")
