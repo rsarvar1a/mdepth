@@ -1,0 +1,2 @@
+trained/* filter=lfs diff=lfs merge=lfs -text
+trained/monodepthvgg-2023-12-20T06_12.pt filter=lfs diff=lfs merge=lfs -text
